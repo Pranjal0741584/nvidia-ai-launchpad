@@ -253,4 +253,67 @@ $('#catalogSearch').addEventListener('input',renderCatalog);$('#catalogCategory'
 function downloadJson(name,obj){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 $('#proposal').onclick=()=>{const brief={title:'AI LaunchPad — Independent Product Concept',status:'Prototype for discussion; not an official NVIDIA product',problem:'AI teams can face fragmented workflows when estimating deployment readiness, hardware fit, cost, benchmark repeatability and operational preparedness.',concept:'A modular workspace to bring these planning tasks into one reviewable workflow.',applications:['GPU Fit Finder','Inference Cost Estimator','Benchmark Lab','Deployment Blueprint','Incident Triage Assistant','Security Readiness'],potentialValueHypotheses:['Reduce manual pre-deployment checklist work','Make hardware and cost assumptions visible earlier','Improve benchmark reproducibility','Standardize rollout and incident first-response practices'],prototypeLimitations:['All metrics and hardware tiers are illustrative','No live GPU telemetry, NVIDIA APIs, cloud pricing feeds or endpoint connections','No production benchmark, deployment or automated remediation is performed'],validationPlan:['Interview infrastructure and inference engineers','Validate workload assumptions with real benchmarks','Review product overlap and integration feasibility with NVIDIA teams','Pilot one workflow and measure time saved and decision quality'],generatedAt:new Date().toISOString()};downloadJson('nvidia-ai-launchpad-concept-brief.json',brief);toast('Concept brief exported. Review and personalize it before sharing.')}
 </script>
+
+<style>
+#safeTools{position:fixed;right:18px;bottom:18px;z-index:9999;background:#111820;border:1px solid #76b900;border-radius:14px;padding:10px;box-shadow:0 12px 36px #0009}
+#safeTools button{border:0;border-radius:9px;padding:10px 13px;font-weight:700;background:#76b900;color:#10150a}
+#safePanel{position:fixed;inset:0;z-index:10000;background:#030609d9;display:none;align-items:center;justify-content:center;padding:18px}
+#safePanel.open{display:flex}.safeCard{width:min(760px,100%);max-height:90vh;overflow:auto;background:#101820;border:1px solid #354532;border-radius:18px;padding:22px;color:#eef3f7;box-shadow:0 25px 90px #000b}
+.safeCard h2{margin:0 0 8px}.safeCard p,.safeCard li{color:#b9c7d3}.safeActions{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0}.safeActions button,.safeClose{background:#202b35!important;color:#eef3f7!important;border:1px solid #3b4b59!important}.safeCard input[type=file]{max-width:100%;color:#b9c7d3}.safeStatus{padding:10px;border-radius:9px;background:#17251a;color:#c8f28d;min-height:40px}.safeCard .warning{color:#ffd18a}
+</style>
+<div id="safeTools"><button type="button" id="openSafeTools" aria-haspopup="dialog">Backup &amp; Security</button></div>
+<div id="safePanel" role="dialog" aria-modal="true" aria-labelledby="safeTitle">
+ <section class="safeCard">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><h2 id="safeTitle">Workspace Backup &amp; Security</h2><button type="button" class="safeClose" id="closeSafeTools" aria-label="Close">Close ✕</button></div>
+  <p>Export a local backup of AI LaunchPad workspace preferences stored by this feature, or restore a previously exported backup.</p>
+  <div class="safeActions"><button type="button" id="makeSafeBackup">Export backup JSON</button><button type="button" class="safeClose" id="restoreSafeBackup">Restore from JSON</button><input id="safeFile" type="file" accept=".json,application/json" hidden></div>
+  <div id="safeStatus" class="safeStatus" role="status" aria-live="polite">No backup action performed yet.</div>
+  <h3>Security checklist</h3>
+  <ul>
+   <li>Use a unique password and enable two-factor authentication on your GitHub account.</li>
+   <li>Review repository collaborators and revoke access you no longer need.</li>
+   <li>Never put API keys, passwords, private tokens, customer data, or secrets in this public static site.</li>
+   <li>Review third-party links and dependencies before use; keep backups outside the repository too.</li>
+   <li class="warning">This static GitHub Pages prototype cannot enforce server-side authentication, provide encrypted cloud backups, or guarantee that a site is “unhackable.”</li>
+  </ul>
+  <p><strong>Backup scope:</strong> this feature saves only its own namespaced local workspace record. It does not back up or restore the website source code or GitHub repository.</p>
+ </section>
+</div>
+<script>
+(()=>{
+ const panel=document.getElementById('safePanel'),status=document.getElementById('safeStatus'),file=document.getElementById('safeFile');
+ const KEY='aiLaunchPad.safeWorkspace.v1',VERSION=1;
+ const say=(message)=>{status.textContent=message};
+ const open=()=>{panel.classList.add('open');document.getElementById('closeSafeTools').focus()};
+ const close=()=>{panel.classList.remove('open');document.getElementById('openSafeTools').focus()};
+ document.getElementById('openSafeTools').addEventListener('click',open);
+ document.getElementById('closeSafeTools').addEventListener('click',close);
+ panel.addEventListener('click',e=>{if(e.target===panel)close()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('open'))close()});
+ document.getElementById('makeSafeBackup').addEventListener('click',()=>{
+   const backup={product:'AI LaunchPad',kind:'local-workspace-backup',version:VERSION,createdAt:new Date().toISOString(),workspace:null};
+   try{const raw=localStorage.getItem(KEY);backup.workspace=raw?JSON.parse(raw):{note:'No saved preferences yet.'};}
+   catch(e){say('Could not read the local workspace record.');return;}
+   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='ai-launchpad-backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+   say('Backup exported. Store a copy somewhere safe outside this repository.');
+ });
+ document.getElementById('restoreSafeBackup').addEventListener('click',()=>file.click());
+ file.addEventListener('change',async()=>{
+   const selected=file.files&&file.files[0];if(!selected)return;
+   if(selected.size>1024*1024){say('Restore rejected: backup must be smaller than 1 MB.');file.value='';return;}
+   try{
+    const data=JSON.parse(await selected.text());
+    if(!data||data.product!=='AI LaunchPad'||data.kind!=='local-workspace-backup'||data.version!==VERSION||!Object.prototype.hasOwnProperty.call(data,'workspace'))throw new Error('format');
+    if(!confirm('Restore this AI LaunchPad local workspace backup? The current saved record for this feature will be replaced.')){say('Restore cancelled.');file.value='';return;}
+    const serialized=JSON.stringify(data.workspace);
+    if(serialized.length>500000)throw new Error('size');
+    localStorage.setItem(KEY,serialized);
+    say('Workspace record restored locally. This does not restore source code or change GitHub files.');
+   }catch(e){say('Restore failed: invalid, unsupported, or oversized backup. No file content was executed.');}
+   file.value='';
+ });
+})();
+</script>
+
 </body></html>
