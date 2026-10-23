@@ -30,3 +30,8 @@ The prototype includes a 2027–2031 learning roadmap and practical skill areas:
 
 ## NVIDIA Services Catalog
 The interactive NVIDIA Catalog page provides a searchable directory of major NVIDIA product and service families with links to official NVIDIA pages. It is a curated index, not a complete list of every SKU, API, partner offer or regional service. Links and offerings may change; consult the official linked pages for current details.
+
+
+## NVIDIA AI Stack Explorer
+
+The site contains a curated, searchable directory of upstream NVIDIA AI projects across model development, inference, GPU programming, data, robotics, retrieval and operations. It links to original repositories rather than copying or automatically installing their source. Check each upstream project's license and requirements before use.
