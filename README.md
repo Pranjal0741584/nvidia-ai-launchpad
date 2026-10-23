@@ -23,3 +23,7 @@ See [PRODUCT_CONCEPT.md](PRODUCT_CONCEPT.md) for the problem hypothesis, propose
 All metrics and charts are simulated. GPU memory tiers are generic planning references, not a hardware compatibility guarantee. Cost figures depend entirely on values entered by the user. The benchmark planner does not run tests, the deployment blueprint does not deploy services, the triage tool does not diagnose autonomously, and the security checklist is not a certification. No NVIDIA APIs, GPU telemetry, cloud pricing feeds, production endpoints or external systems are connected.
 
 The purpose is to invite feedback and validate the concept before building real integrations.
+
+
+## NVIDIA Services Catalog
+The interactive NVIDIA Catalog page provides a searchable directory of major NVIDIA product and service families with links to official NVIDIA pages. It is a curated index, not a complete list of every SKU, API, partner offer or regional service. Links and offerings may change; consult the official linked pages for current details.
