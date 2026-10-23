@@ -25,5 +25,8 @@ All metrics and charts are simulated. GPU memory tiers are generic planning refe
 The purpose is to invite feedback and validate the concept before building real integrations.
 
 
+## Future AI Skills & Technology Radar
+The prototype includes a 2027–2031 learning roadmap and practical skill areas: agentic AI, advanced RAG, small models, multimodal AI, GPU inference optimization, evaluation and guardrails, AI security, synthetic data, physical AI, MLOps/LLMOps, quantitative AI, and distributed/energy-aware systems. The roadmap is a forward-looking guide, not a prediction of guaranteed demand.
+
 ## NVIDIA Services Catalog
 The interactive NVIDIA Catalog page provides a searchable directory of major NVIDIA product and service families with links to official NVIDIA pages. It is a curated index, not a complete list of every SKU, API, partner offer or regional service. Links and offerings may change; consult the official linked pages for current details.
